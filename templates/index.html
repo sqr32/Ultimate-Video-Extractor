@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Video Extractor - Ali Adnan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #5a52d5;
+            --gradient-start: #f5f7fa;
+            --gradient-end: #c3cfe2;
+            --text-color: #333;
+            --text-muted: #666;
+            --bg-color: #fff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #e0e0e0;
+            --input-bg: #fff;
+            --quality-bg: #f8f9fa;
+            --platform-bg: #fff;
+            --footer-bg: rgba(255, 255, 255, 0.95);
+            --footer-text: #666;
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #8983ff;
+            --secondary-color: #7a72ff;
+            --gradient-start: #1a1a1a;
+            --gradient-end: #2d2d2d;
+            --text-color: #fff;
+            --text-muted: #aaa;
+            --bg-color: #121212;
+            --card-bg: rgba(30, 30, 30, 0.95);
+            --header-bg: rgba(18, 18, 18, 0.95);
+            --border-color: #404040;
+            --input-bg: #2d2d2d;
+            --quality-bg: #2d2d2d;
+            --platform-bg: #2d2d2d;
+            --footer-bg: rgba(18, 18, 18, 0.95);
+            --footer-text: #aaa;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-color);
+        }
+        
+        .header {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .header .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .header .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 600;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .header .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 3rem 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .form-control {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border-color: var(--border-color);
+            border-radius: 15px 0 0 15px;
+            padding: 15px 25px;
+            border-right: none;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            height: auto;
+        }
+        
+        .form-control:focus {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border-color: var(--primary-color);
+            box-shadow: none;
+        }
+        
+        .input-group {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .btn-extract {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 0 15px 15px 0;
+            padding: 15px 40px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            color: white;
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-extract:hover {
+            background: var(--secondary-color);
+            transform: translateY(0);
+            box-shadow: none;
+            color: white;
+        }
+        
+        .btn-extract i {
+            font-size: 1.2rem;
+        }
+        
+        .result-card {
+            display: none;
+            margin-top: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .thumbnail-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .thumbnail-container img {
+            width: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .thumbnail-container:hover img {
+            transform: scale(1.05);
+        }
+        
+        .quality-selector {
+            background: var(--quality-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .quality-selector h5 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        .quality-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .quality-option {
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .quality-option:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .quality-option.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .platform-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .platform-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--platform-bg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .platform-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .platform-icon i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .platform-icon small {
+            color: var(--text-muted) !important;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .footer {
+            background: var(--footer-bg);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            margin-top: auto;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .copyright {
+            color: var(--footer-text);
+            font-weight: 500;
+        }
+        
+        .social-links a {
+            color: var(--footer-text);
+            margin: 0 10px;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-buttons a {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .action-buttons .btn-watch {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .action-buttons .btn-watch:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .action-buttons .btn-download {
+            background: var(--input-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .action-buttons .btn-download:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .toggle-buttons {
+            display: flex;
+            gap: 10px;
+            margin-right: 20px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 5px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .toggle-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="logo" href="#">Ultimate Video Extractor</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#supported-platforms">المنصات المدعومة</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">حول</a>
+                        </li>
+                    </ul>
+                    <div class="toggle-buttons">
+                        <button id="langToggle" class="toggle-btn" onclick="toggleLanguage()">
+                            <i class="fas fa-language"></i>
+                            <span>English</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="card p-4">
+                <h1 class="text-center mb-4">استخراج الفيديو بجودة عالية</h1>
+                
+                <!-- URL Form -->
+                <form id="urlForm" class="mb-4">
+                    <div class="input-group">
+                        <input type="url" class="form-control" id="videoUrl" 
+                               placeholder="ضع رابط الفيديو هنا..." data-translate required>
+                        <button type="submit" class="btn btn-extract">
+                            <i class="fas fa-magic"></i>
+                            <span data-translate>استخراج</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Loading Spinner -->
+                <div class="loading">
+                    <div class="spinner-border text-primary">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                </div>
+                
+                <!-- Results Card -->
+                <div class="result-card">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="thumbnail-container">
+                                <img id="videoThumbnail" src="" alt="صورة مصغرة" class="img-fluid">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="video-info p-4">
+                                <h3 id="videoTitle" class="mb-3"></h3>
+                                <span id="platformBadge" class="platform-badge mb-3 d-inline-block"></span>
+                                <p id="videoDescription" class="text-muted mb-3"></p>
+                                
+                                <!-- Quality Selector -->
+                                <div class="quality-selector mb-3">
+                                    <h5>اختر الجودة:</h5>
+                                    <div id="qualityOptions" class="d-flex flex-wrap gap-2">
+                                        <!-- Quality options will be added dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <div class="video-stats mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-2"></i><span id="viewCount"></span> مشاهدة
+                                    </small>
+                                    <small class="text-muted ms-3">
+                                        <i class="fas fa-film me-2"></i><span id="videoQuality"></span>
+                                    </small>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <a id="watchButton" href="" target="_blank" 
+                                       class="btn btn-watch">
+                                        <i class="fas fa-play"></i>
+                                        <span>مشاهدة مباشرة</span>
+                                    </a>
+                                    <a id="downloadButton" href="" target="_blank" 
+                                       class="btn btn-download">
+                                        <i class="fas fa-download"></i>
+                                        <span>تحميل الفيديو</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Supported Platforms -->
+                <div id="supported-platforms" class="mt-5">
+                    <h2 class="text-center mb-4">المنصات المدعومة</h2>
+                    <div class="platform-icons">
+                        <div class="platform-icon">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                            <small class="text-muted d-block mt-2">دعم كامل لجميع مقاطع الفيديو</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook</span>
+                            <small class="text-muted d-block mt-2">مقاطع الفيديو العامة والخاصة</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fab fa-twitter"></i>
+                            <span>Twitter</span>
+                            <small class="text-muted d-block mt-2">تغريدات الفيديو والبث المباشر</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                            <small class="text-muted d-block mt-2">القصص والمنشورات والريلز</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                            <small class="text-muted d-block mt-2">جميع مقاطع TikTok بدون علامة مائية</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fas fa-play"></i>
+                            <span>Pornhub</span>
+                            <small class="text-muted d-block mt-2">مقاطع الفيديو المجانية والمميزة</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fas fa-film"></i>
+                            <span>XNXX</span>
+                            <small class="text-muted d-block mt-2">جميع مقاطع الفيديو</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fab fa-vimeo"></i>
+                            <span>Vimeo</span>
+                            <small class="text-muted d-block mt-2">مقاطع Vimeo المجانية والمدفوعة</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Dailymotion</span>
+                            <small class="text-muted d-block mt-2">جميع مقاطع Dailymotion</small>
+                        </div>
+                        <div class="platform-icon">
+                            <i class="fas fa-video"></i>
+                            <span>منصات أخرى</span>
+                            <small class="text-muted d-block mt-2">دعم لأكثر من 100 موقع</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div id="about" class="mt-5">
+                    <h2 class="text-center mb-4" data-translate>حول Ultimate Video Extractor</h2>
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-4" data-translate>مميزات الموقع</h5>
+                                    <div class="features-list">
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>تحميل مقاطع الفيديو بأعلى جودة متاحة</span>
+                                        </div>
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>دعم لأكثر من 100 موقع فيديو</span>
+                                        </div>
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>تحميل مباشر بدون برامج إضافية</span>
+                                        </div>
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>تجاوز القيود الجغرافية والعمرية</span>
+                                        </div>
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>واجهة سهلة الاستخدام</span>
+                                        </div>
+                                        <div class="feature-item mb-3">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span data-translate>تحديثات مستمرة لضمان التوافق</span>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="card-title mt-4 mb-3" data-translate>معلومات عنا</h5>
+                                    <p class="card-text" data-translate>Ultimate Video Extractor هو موقع متخصص في تحميل مقاطع الفيديو من مختلف المنصات بأعلى جودة متاحة. نحن نقدم خدمة موثوقة وسريعة لمساعدتك في الوصول إلى المحتوى الذي تريده بسهولة.</p>
+                                    <p class="card-text" data-translate>تم تطوير الموقع بواسطة فريق من المطورين المحترفين مع التركيز على سهولة الاستخدام والأداء العالي. نحن نعمل باستمرار على تحسين خدماتنا وإضافة المزيد من المميزات.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    © 2024 Ultimate Video Extractor. <span data-translate>جميع الحقوق محفوظة لـ</span> Ali Adnan
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Language state
+        let currentLang = 'ar';
+
+        // Language toggle function
+        function toggleLanguage() {
+            const langBtn = document.getElementById('langToggle');
+            if (currentLang === 'ar') {
+                document.documentElement.setAttribute('lang', 'en');
+                document.documentElement.setAttribute('dir', 'ltr');
+                langBtn.querySelector('span').textContent = 'عربي';
+                currentLang = 'en';
+                translateToEnglish();
+            } else {
+                document.documentElement.setAttribute('lang', 'ar');
+                document.documentElement.setAttribute('dir', 'rtl');
+                langBtn.querySelector('span').textContent = 'English';
+                currentLang = 'ar';
+                translateToArabic();
+            }
+        }
+
+        // Translation functions
+        function translateToEnglish() {
+            const translations = {
+                'استخراج الفيديو بجودة عالية': 'Extract Video in High Quality',
+                'ضع رابط الفيديو هنا...': 'Enter video URL here...',
+                'استخراج': 'Extract',
+                'المنصات المدعومة': 'Supported Platforms',
+                'حول': 'About',
+                'اختر الجودة:': 'Select Quality:',
+                'مشاهدة': 'Views',
+                'مشاهدة مباشرة': 'Watch Now',
+                'تحميل الفيديو': 'Download Video',
+                'جاري التحميل...': 'Loading...',
+                'دعم كامل لجميع مقاطع الفيديو': 'Full support for all videos',
+                'مقاطع الفيديو العامة والخاصة': 'Public and private videos',
+                'تغريدات الفيديو والبث المباشر': 'Video tweets and live streams',
+                'القصص والمنشورات والريلز': 'Stories, posts and reels',
+                'جميع مقاطع TikTok بدون علامة مائية': 'All TikTok videos without watermark',
+                'مقاطع الفيديو المجانية والمميزة': 'Free and premium videos',
+                'جميع مقاطع الفيديو': 'All videos',
+                'مقاطع Vimeo المجانية والمدفوعة': 'Free and paid Vimeo videos',
+                'جميع مقاطع Dailymotion': 'All Dailymotion videos',
+                'دعم لأكثر من 100 موقع': 'Support for over 100 sites',
+                'مميزات الموقع': 'Website Features',
+                'تحميل مقاطع الفيديو بأعلى جودة متاحة': 'Download videos in highest available quality',
+                'دعم لأكثر من 100 موقع فيديو': 'Support for over 100 video sites',
+                'تحميل مباشر بدون برامج إضافية': 'Direct download without additional software',
+                'تجاوز القيود الجغرافية والعمرية': 'Bypass geographical and age restrictions',
+                'واجهة سهلة الاستخدام': 'User-friendly interface',
+                'تحديثات مستمرة لضمان التوافق': 'Continuous updates for compatibility',
+                'معلومات عنا': 'About Us',
+                'جميع الحقوق محفوظة لـ': 'All rights reserved to',
+                'منصات أخرى': 'Other Platforms',
+                'فشل التحميل. يرجى المحاولة مرة أخرى.': 'Download failed. Please try again.',
+                'حدث خطأ أثناء معالجة الطلب': 'An error occurred while processing the request',
+                'حول Ultimate Video Extractor': 'About Ultimate Video Extractor',
+                'Ultimate Video Extractor هو موقع متخصص في تحميل مقاطع الفيديو من مختلف المنصات بأعلى جودة متاحة. نحن نقدم خدمة موثوقة وسريعة لمساعدتك في الوصول إلى المحتوى الذي تريده بسهولة.': 'Ultimate Video Extractor is a website specialized in downloading videos from various platforms in the highest available quality. We provide a reliable and fast service to help you access the content you want easily.',
+                'تم تطوير الموقع بواسطة فريق من المطورين المحترفين مع التركيز على سهولة الاستخدام والأداء العالي. نحن نعمل باستمرار على تحسين خدماتنا وإضافة المزيد من المميزات.': 'The site was developed by a team of professional developers with a focus on ease of use and high performance. We are constantly working to improve our services and add more features.'
+            };
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.textContent.trim() || element.placeholder;
+                if (translations[key]) {
+                    if (element.placeholder) {
+                        element.placeholder = translations[key];
+                    } else {
+                        element.textContent = translations[key];
+                    }
+                }
+            });
+
+            // Update direction-specific styles
+            document.body.style.textAlign = 'left';
+            document.querySelectorAll('.input-group .form-control').forEach(el => {
+                el.style.borderRadius = '0 15px 15px 0';
+                el.style.borderRight = 'none';
+                el.style.borderLeft = '2px solid var(--border-color)';
+            });
+            document.querySelectorAll('.btn-extract').forEach(el => {
+                el.style.borderRadius = '15px 0 0 15px';
+            });
+        }
+
+        function translateToArabic() {
+            const translations = {
+                'Extract Video in High Quality': 'استخراج الفيديو بجودة عالية',
+                'Enter video URL here...': 'ضع رابط الفيديو هنا...',
+                'Extract': 'استخراج',
+                'Supported Platforms': 'المنصات المدعومة',
+                'About': 'حول',
+                'Select Quality:': 'اختر الجودة:',
+                'Views': 'مشاهدة',
+                'Watch Now': 'مشاهدة مباشرة',
+                'Download Video': 'تحميل الفيديو',
+                'Loading...': 'جاري التحميل...',
+                'Full support for all videos': 'دعم كامل لجميع مقاطع الفيديو',
+                'Public and private videos': 'مقاطع الفيديو العامة والخاصة',
+                'Video tweets and live streams': 'تغريدات الفيديو والبث المباشر',
+                'Stories, posts and reels': 'القصص والمنشورات والريلز',
+                'All TikTok videos without watermark': 'جميع مقاطع TikTok بدون علامة مائية',
+                'Free and premium videos': 'مقاطع الفيديو المجانية والمميزة',
+                'All videos': 'جميع مقاطع الفيديو',
+                'Free and paid Vimeo videos': 'مقاطع Vimeo المجانية والمدفوعة',
+                'All Dailymotion videos': 'جميع مقاطع Dailymotion',
+                'Support for over 100 sites': 'دعم لأكثر من 100 موقع',
+                'Website Features': 'مميزات الموقع',
+                'Download videos in highest available quality': 'تحميل مقاطع الفيديو بأعلى جودة متاحة',
+                'Support for over 100 video sites': 'دعم لأكثر من 100 موقع فيديو',
+                'Direct download without additional software': 'تحميل مباشر بدون برامج إضافية',
+                'Bypass geographical and age restrictions': 'تجاوز القيود الجغرافية والعمرية',
+                'User-friendly interface': 'واجهة سهلة الاستخدام',
+                'Continuous updates for compatibility': 'تحديثات مستمرة لضمان التوافق',
+                'About Us': 'معلومات عنا',
+                'All rights reserved to': 'جميع الحقوق محفوظة لـ',
+                'Other Platforms': 'منصات أخرى',
+                'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.',
+                'An error occurred while processing the request': 'حدث خطأ أثناء معالجة الطلب',
+                'About Ultimate Video Extractor': 'حول Ultimate Video Extractor',
+                'Ultimate Video Extractor is a website specialized in downloading videos from various platforms in the highest available quality. We provide a reliable and fast service to help you access the content you want easily.': 'Ultimate Video Extractor هو موقع متخصص في تحميل مقاطع الفيديو من مختلف المنصات بأعلى جودة متاحة. نحن نقدم خدمة موثوقة وسريعة لمساعدتك في الوصول إلى المحتوى الذي تريده بسهولة.',
+                'The site was developed by a team of professional developers with a focus on ease of use and high performance. We are constantly working to improve our services and add more features.': 'تم تطوير الموقع بواسطة فريق من المطورين المحترفين مع التركيز على سهولة الاستخدام والأداء العالي. نحن نعمل باستمرار على تحسين خدماتنا وإضافة المزيد من المميزات.'
+            };
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.textContent.trim() || element.placeholder;
+                if (translations[key]) {
+                    if (element.placeholder) {
+                        element.placeholder = translations[key];
+                    } else {
+                        element.textContent = translations[key];
+                    }
+                }
+            });
+
+            // Update direction-specific styles
+            document.body.style.textAlign = 'right';
+            document.querySelectorAll('.input-group .form-control').forEach(el => {
+                el.style.borderRadius = '15px 0 0 15px';
+                el.style.borderLeft = 'none';
+                el.style.borderRight = '2px solid var(--border-color)';
+            });
+            document.querySelectorAll('.btn-extract').forEach(el => {
+                el.style.borderRadius = '0 15px 15px 0';
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add data-translate attribute to elements that need translation
+            const translatableElements = document.querySelectorAll('h1, h2, h3, h4, h5, p, span, a, button, label, input[placeholder], small, .card-text');
+            translatableElements.forEach(element => {
+                if (element.textContent.trim()) {
+                    element.setAttribute('data-translate', '');
+                }
+            });
+
+            // Save language preference
+            const savedLang = localStorage.getItem('language');
+            if (savedLang === 'en') {
+                toggleLanguage();
+            }
+        });
+
+        $(document).ready(function() {
+            $('#urlForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                $('.loading').show();
+                $('.result-card').hide();
+                
+                $.ajax({
+                    url: '/extract',
+                    method: 'POST',
+                    data: {
+                        url: $('#videoUrl').val()
+                    },
+                    success: function(response) {
+                        $('.loading').hide();
+                        
+                        if (response.error) {
+                            alert(response.error);
+                            return;
+                        }
+                        
+                        // Update video information
+                        $('#videoThumbnail').attr('src', response.thumbnail);
+                        $('#videoTitle').text(response.title);
+                        $('#platformBadge').text(response.platform);
+                        $('#videoDescription').text(response.description);
+                        $('#viewCount').text(new Intl.NumberFormat('ar-EG').format(response.view_count));
+                        
+                        // Generate quality options and set initial URLs
+                        $('#qualityOptions').empty();
+                        let defaultUrl = '';
+                        
+                        if (response.formats && response.formats.length > 0) {
+                            response.formats.forEach((format, index) => {
+                                const option = $(`<div class="quality-option ${index === 0 ? 'active' : ''}"
+                                                data-quality="${format.quality}"
+                                                data-url="${format.url}">
+                                                ${format.quality} - ${format.resolution}
+                                           </div>`);
+                                $('#qualityOptions').append(option);
+                                
+                                // Set default URL from first format
+                                if (index === 0) {
+                                    defaultUrl = format.url;
+                                }
+                            });
+                        } else if (response.download_url) {
+                            // Fallback to direct download URL if no formats
+                            defaultUrl = response.download_url;
+                        }
+                        
+                        // Set initial URLs for both buttons
+                        if (defaultUrl) {
+                            $('#watchButton').attr('href', defaultUrl);
+                            $('#downloadButton').attr('href', defaultUrl);
+                        }
+                        
+                        // Update quality selector functionality
+                        $('.quality-option').click(function() {
+                            $('.quality-option').removeClass('active');
+                            $(this).addClass('active');
+                            const url = $(this).data('url');
+                            const quality = $(this).data('quality');
+                            if (url) {
+                                // Update watch button
+                                $('#watchButton').attr('href', url);
+                                
+                                // Update download button click handler
+                                $('#downloadButton').off('click').on('click', function(e) {
+                                    e.preventDefault();
+                                    const filename = `${response.title}_${quality}.${response.format || 'mp4'}`;
+                                    
+                                    // Show loading state
+                                    const $btn = $(this);
+                                    const originalText = $btn.find('span').text();
+                                    $btn.prop('disabled', true);
+                                    $btn.find('span').text('جاري التحميل...');
+                                    
+                                    // Fetch the video file
+                                    fetch(url)
+                                        .then(response => response.blob())
+                                        .then(blob => {
+                                            // Create blob URL
+                                            const blobUrl = window.URL.createObjectURL(blob);
+                                            
+                                            // Create temporary link and click it
+                                            const a = document.createElement('a');
+                                            a.style.display = 'none';
+                                            a.href = blobUrl;
+                                            a.download = filename;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            
+                                            // Cleanup
+                                            window.URL.revokeObjectURL(blobUrl);
+                                            document.body.removeChild(a);
+                                            
+                                            // Reset button state
+                                            $btn.prop('disabled', false);
+                                            $btn.find('span').text(originalText);
+                                        })
+                                        .catch(error => {
+                                            console.error('Download failed:', error);
+                                            alert('فشل التحميل. يرجى المحاولة مرة أخرى.');
+                                            
+                                            // Reset button state
+                                            $btn.prop('disabled', false);
+                                            $btn.find('span').text(originalText);
+                                        });
+                                });
+                            }
+                        });
+
+                        // Trigger click on first quality option
+                        $('.quality-option:first').click();
+                        
+                        // Show results
+                        $('.result-card').fadeIn();
+                        
+                        // Add watch attributes
+                        $('#watchButton').attr({
+                            'target': '_blank',
+                            'rel': 'noopener noreferrer'
+                        });
+                    },
+                    error: function() {
+                        $('.loading').hide();
+                        alert('حدث خطأ أثناء معالجة الطلب');
+                    }
+                });
+            });
+            
+            // Smooth scroll for navigation links
+            $('a[href^="#"]').on('click', function(e) {
+                e.preventDefault();
+                const target = $(this.hash);
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 100
+                    }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
